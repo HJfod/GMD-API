@@ -8,13 +8,13 @@ Add `hjfod.geode-api` into your mod dependencies:
 
 ```json
 {
-	"dependencies": [
-		{
-			"id": "hjfod.gmd-api",
-			"version": "v1.0.0",
-			"required": true
-		}
-	]
+    "dependencies": [
+        {
+            "id": "hjfod.gmd-api",
+            "version": "v1.0.0",
+            "required": true
+        }
+    ]
 }
 ```
 
