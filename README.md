@@ -4,7 +4,7 @@ A Geode mod for working with [GMD files](https://fileinfo.com/extension/gmd).
 
 ## Installation & Usage
 
-Add `hjfod.geode-api` into your mod dependencies:
+Add `hjfod.gmd-api` into your mod dependencies:
 
 ```json
 {
