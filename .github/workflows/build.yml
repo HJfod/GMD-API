@@ -61,10 +61,17 @@ jobs:
         curl -L https://github.com/geode-sdk/geode/releases/download/${{ env.GEODE_VERSION }}/geode-${{ env.GEODE_VERSION }}-${{ matrix.config.platform_suffix }}.zip -o geode-sdk.zip
         tar -xf geode-sdk.zip
       
+    - name: Download and Unzip CLI
+      run: |
+        cd ${{ github.workspace }}/cli
+        curl -L https://github.com/geode-sdk/cli/releases/download/${{ env.CLI_VERSION }}/geode-cli-${{ env.CLI_VERSION }}-${{ matrix.config.platform_suffix }}.zip -o geode-cli.zip
+        tar -xf geode-cli.zip
+        echo "${{ github.workspace }}/cli" >> $GITHUB_PATH
+      
     - name: Configure CMake
       run: |
         cd ${{ github.workspace }}
-        cmake -B build ${{ matrix.config.extra_flags }} -DGEODE_DISABLE_CLI_CALLS=1
+        cmake -B build ${{ matrix.config.extra_flags }}
     
     - name: Build
       run: |
@@ -88,11 +95,6 @@ jobs:
         with:
           submodules: recursive
       
-      - name: Download and Unzip CLI
-        run: |
-          curl -L https://github.com/geode-sdk/cli/releases/download/${{ env.CLI_VERSION }}/geode-cli-${{ env.CLI_VERSION }}-win.zip -o geode-cli.zip
-          tar -xf geode-cli.zip
-        
       - uses: actions/download-artifact@v3
         with:
           name: build-windows
