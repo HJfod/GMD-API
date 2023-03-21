@@ -72,7 +72,7 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         cmake -B build ${{ matrix.config.extra_flags }} -DCLI_PATH=${{ github.workspace }}/cli -DGEODE_DONT_INSTALL_MODS=On
-    
+     
     - name: Build
       run: |
         cd ${{ github.workspace }}/build
