@@ -71,7 +71,7 @@ jobs:
     - name: Configure CMake
       run: |
         cd ${{ github.workspace }}
-        cmake -B build ${{ matrix.config.extra_flags }} -DCLI_PATH=${{ github.workspace }}/cli
+        cmake -B build ${{ matrix.config.extra_flags }} -DCLI_PATH=${{ github.workspace }}/cli -DGEODE_DONT_INSTALL_MODS
     
     - name: Build
       run: |
