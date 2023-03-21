@@ -63,6 +63,7 @@ jobs:
       
     - name: Download and Unzip CLI
       run: |
+        mkdir ${{ github.workspace }}/cli
         cd ${{ github.workspace }}/cli
         curl -L https://github.com/geode-sdk/cli/releases/download/${{ env.CLI_VERSION }}/geode-cli-${{ env.CLI_VERSION }}-${{ matrix.config.platform_suffix }}.zip -o geode-cli.zip
         tar -xf geode-cli.zip
