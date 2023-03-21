@@ -83,7 +83,7 @@ jobs:
         name: "build-${{ matrix.config.bin_folder }}"
         path: "${{ matrix.config.out_paths }}"
         
-        
+               
   package:
     name: "Package both builds"
     # would use linux but theres no cli build for it
@@ -95,6 +95,11 @@ jobs:
         with:
           submodules: recursive
       
+      - name: Download and Unzip CLI
+        run: |
+          curl -L https://github.com/geode-sdk/cli/releases/download/${{ env.CLI_VERSION }}/geode-cli-${{ env.CLI_VERSION }}-win.zip -o geode-cli.zip
+          tar -xf geode-cli.zip
+        
       - uses: actions/download-artifact@v3
         with:
           name: build-windows
