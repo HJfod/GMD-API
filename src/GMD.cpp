@@ -4,7 +4,7 @@
 #include <Geode/binding/MusicDownloadManager.hpp>
 #include <Geode/utils/JsonValidation.hpp>
 
-USE_GEODE_NAMESPACE();
+using namespace geode::prelude;
 using namespace gmd;
 
 #define TRY_UNWRAP_INTO(into, ...) \
