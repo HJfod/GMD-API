@@ -31,3 +31,5 @@ gmd::exportLevelAsGmd(level, "path/to/file.gmd");
 // importing a level
 auto level = gmd::importGmdAsLevel("path/to/file.gmd");
 ```
+
+The dependency is available on both Windows and Mac.
