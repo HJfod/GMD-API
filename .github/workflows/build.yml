@@ -10,7 +10,7 @@ env:
   GEODE_SDK: ${{ github.workspace }}/sdk
   GEODE_VERSION: nightly
   CLI_VERSION: v2.0.0
-  MOD_NAME: GMD API
+  MOD_NAME: GMD_API
   MOD_ID: hjfod.gmd-api
 
 jobs:
@@ -64,8 +64,8 @@ jobs:
     - name: Configure CMake
       run: |
         cd ${{ github.workspace }}
-        cmake -B build ${{ matrix.config.extra_flags }} -DGEODE_DONT_INSTALL_MODS=On -DGEODE_DISABLE_CLI_CALLS=On
-     
+        cmake -B build ${{ matrix.config.extra_flags }} -DGEODE_DISABLE_CLI_CALLS=1
+    
     - name: Build
       run: |
         cd ${{ github.workspace }}/build
@@ -76,7 +76,7 @@ jobs:
         name: "build-${{ matrix.config.bin_folder }}"
         path: "${{ matrix.config.out_paths }}"
         
-               
+        
   package:
     name: "Package both builds"
     # would use linux but theres no cli build for it
