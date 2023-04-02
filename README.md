@@ -32,4 +32,4 @@ gmd::exportLevelAsGmd(level, "path/to/file.gmd");
 auto level = gmd::importGmdAsLevel("path/to/file.gmd");
 ```
 
-The dependency is available on both Windows and Mac.
+Available on both Windows and Mac.
