@@ -123,7 +123,7 @@ jobs:
       - name: Merge
         shell: bash
         run: |
-          ./geode.exe package new . --binary $MOD_ID.dll --binary $MOD_ID.dylib --output $MOD_ID.geode
+          ./geode.exe package new . --binary $MOD_ID.dll --binary $MOD_ID.lib --binary $MOD_ID.dylib --output $MOD_ID.geode
          
       - uses: actions/upload-artifact@v3
         with:
