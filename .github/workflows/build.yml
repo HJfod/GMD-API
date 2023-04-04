@@ -23,7 +23,9 @@ jobs:
           bin_folder: "windows"
           os: windows-2019
           extra_flags: '-T host=x64 -A win32'
-          out_paths:  './build/Release/*.dll'
+          out_paths: |
+            './build/Release/*.dll'
+            './build/Release/*.lib'
           platform_suffix: 'win'
           cli_setup: ''
           cli_name: 'geode.exe'
