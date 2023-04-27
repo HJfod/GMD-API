@@ -30,6 +30,18 @@ static std::string removeNullbytesFromString(std::string const& str) {
     return ret;
 }
 
+static bool verifySongFileName(std::string const& name) {
+    // Make sure that the song name is .mp3 and the name is parseable as a number
+    if (name.ends_with(".mp3")) {
+        try {
+            (void)std::stoi(name.substr(0, name.size() - 4));
+            return true;
+        }
+        catch(...) {}
+    }
+    return false;
+}
+
 ImportGmdFile::ImportGmdFile(
     ghc::filesystem::path const& path
 ) : m_path(path) {}
@@ -113,7 +125,13 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
                 // unzip song
                 std::string songFile;
                 root.has("song-file").into(songFile);
-                if (songFile.size()) {
+                if (m_importSong && songFile.size()) {
+                    // make sure the song file name is legit. without this check 
+                    // it's possible to do arbitary code execution with gmd2
+                    if (!verifySongFileName(songFile)) {
+                        return Err("Song file name '{}' is invalid!", songFile);
+                    }
+
                     GEODE_UNWRAP_INTO(
                         auto songData, unzip.extract(songFile)
                             .expect("Unable to read song file: {error}")
@@ -164,9 +182,19 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
     }
 
     std::string value = removeNullbytesFromString(data.value());
+    // add gjver if it's missing as otherwise DS_Dictionary fails to load the data
+    auto pos = value.substr(0, 100).find("<plist version=\"1.0\">");
+    if (pos != std::string::npos) {
+        value.replace(pos, 21, "<plist version=\"1.0\" gjver=\"2.0\">");
+    }
     if (!value.starts_with("<?xml version")) {
-        value = "<?xml version=\"1.0\"?><plist version=\"1.0\" gjver=\"2.0\"><dict><k>root</k>" +
-            value + "</dict></plist>";
+        if (value.substr(0, 100).find("<plist version") == std::string::npos) {
+            value = "<?xml version=\"1.0\"?><plist version=\"1.0\" gjver=\"2.0\"><dict><k>root</k>" +
+                value + "</dict></plist>";
+        }
+        else {
+            value = "<?xml version=\"1.0\"?>" + value;
+        }
     }
 
     auto dict = std::make_unique<DS_Dictionary>();
