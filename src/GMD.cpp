@@ -7,11 +7,11 @@
 using namespace geode::prelude;
 using namespace gmd;
 
-#define TRY_UNWRAP_INTO(into, ...) \
+#define TRY_UNWRAP_INTO(into, fmt, ...) \
     try {\
         into = (__VA_ARGS__);\
     } catch(std::exception& e) {\
-        return Err(e.what());\
+        return Err(fmt, e.what());\
     }
 
 static std::string extensionWithoutDot(ghc::filesystem::path const& path) {
@@ -115,9 +115,12 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
                     auto jsonData, unzip.extract("level.meta")
                         .expect("Unable to read metadata: {error}")
                 );
-                
+
                 json::Value json;
-                TRY_UNWRAP_INTO(json, json::parse(std::string(jsonData.begin(), jsonData.end())));
+                TRY_UNWRAP_INTO(
+                    json, "Unable to parse metadata: {}",
+                    json::parse(std::string(jsonData.begin(), jsonData.end()))
+                );
 
                 JsonChecker checker(json);
                 auto root = checker.root("[level.meta]").obj();
