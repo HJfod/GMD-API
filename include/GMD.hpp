@@ -12,7 +12,7 @@
         #define GMDAPI_DLL __declspec(dllimport)
     #endif
 #else
-    #define GMDAPI_DLL
+    #define GMDAPI_DLL __attribute__((visibility("default")))
 #endif
 
 namespace gmd {
