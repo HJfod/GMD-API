@@ -216,6 +216,7 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
     level->m_isEditable = true;
     level->m_levelType = GJLevelType::Editor;
 
+#ifdef GEODE_IS_WINDOWS
     // old gdshare double base64 encoded the description,
     // so we decode it again
     if (isOldFile && level->m_levelDesc.size()) {
@@ -232,6 +233,7 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
             level->m_levelDesc = newDesc;
         }
     }
+#endif
 
     return Ok(level);
 }
