@@ -276,9 +276,7 @@ geode::Result<ByteVector> ExportGmdFile::intoBytes() const {
 
             auto json = matjson::Value(matjson::Object());
             if (m_includeSong) {
-                auto path = ghc::filesystem::path(
-                    std::string(m_level->getAudioFileName())
-                );
+                auto path = ghc::filesystem::path(std::string(m_level->getAudioFileName()));
                 json["song-file"] = path.filename().string();
                 json["song-is-custom"] = m_level->m_songID;
                 GEODE_UNWRAP(zip.addFrom(path));
