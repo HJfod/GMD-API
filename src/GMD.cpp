@@ -1,5 +1,4 @@
 #include <GMD.hpp>
-
 #include <Geode/utils/file.hpp>
 #include <Geode/binding/MusicDownloadManager.hpp>
 #include <Geode/utils/JsonValidation.hpp>
@@ -118,10 +117,10 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
                         .expect("Unable to read metadata: {error}")
                 );
 
-                json::Value json;
+                matjson::Value json;
                 TRY_UNWRAP_INTO(
                     json, "Unable to parse metadata: {}",
-                    json::parse(std::string(jsonData.begin(), jsonData.end()))
+                    matjson::parse(std::string(jsonData.begin(), jsonData.end()))
                 );
 
                 JsonChecker checker(json);
@@ -298,11 +297,9 @@ geode::Result<ByteVector> ExportGmdFile::intoBytes() const {
             GEODE_UNWRAP_INTO(auto data, this->getLevelData());
             GEODE_UNWRAP_INTO(auto zip, file::Zip::create());
 
-            auto json = json::Value(json::Object());
+            auto json = matjson::Value(matjson::Object());
             if (m_includeSong) {
-                auto path = ghc::filesystem::path(
-                    std::string(m_level->getAudioFileName())
-                );
+                auto path = ghc::filesystem::path(std::string(m_level->getAudioFileName()));
                 json["song-file"] = path.filename().string();
                 json["song-is-custom"] = m_level->m_songID;
                 GEODE_UNWRAP(zip.addFrom(path));
