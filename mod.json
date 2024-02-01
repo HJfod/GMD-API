@@ -1,6 +1,10 @@
 {
 	"geode": "2.0.0",
-	"gd": "2.204",
+	"gd": {
+		"android": "2.205",
+		"win": "2.204",
+		"mac": "2.200"
+	},
 	"version": "v1.0.1",
 	"id": "hjfod.gmd-api",
 	"name": "GMD API",
