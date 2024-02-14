@@ -3,6 +3,8 @@
 #include <Geode/binding/MusicDownloadManager.hpp>
 #include <Geode/utils/JsonValidation.hpp>
 
+#include <Geode/cocos/support/base64.h>
+
 using namespace geode::prelude;
 using namespace gmd;
 
@@ -189,8 +191,10 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
     if (pos != std::string::npos) {
         value.replace(pos, 21, "<plist version=\"1.0\" gjver=\"2.0\">");
     }
+    bool isOldFile = false;
     if (!value.starts_with("<?xml version")) {
         if (value.substr(0, 100).find("<plist version") == std::string::npos) {
+            isOldFile = true;
             value = "<?xml version=\"1.0\"?><plist version=\"1.0\" gjver=\"2.0\"><dict><k>root</k>" +
                 value + "</dict></plist>";
         }
@@ -210,6 +214,25 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
 
     level->m_isEditable = true;
     level->m_levelType = GJLevelType::Editor;
+
+#ifdef GEODE_IS_WINDOWS
+    // old gdshare double base64 encoded the description,
+    // so we decode it again
+    if (isOldFile && level->m_levelDesc.size()) {
+        unsigned char* out = nullptr;
+        // we really should add some base64 utils, this is nasty
+        auto size = cocos2d::base64Decode(
+            reinterpret_cast<unsigned char*>(const_cast<char*>(level->m_levelDesc.c_str())),
+            level->m_levelDesc.size(),
+            &out
+        );
+        if (out) {
+            auto newDesc = std::string(reinterpret_cast<char*>(out), size);
+            free(out);
+            level->m_levelDesc = newDesc;
+        }
+    }
+#endif
 
     return Ok(level);
 }

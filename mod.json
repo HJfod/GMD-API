@@ -1,11 +1,11 @@
 {
 	"geode": "2.0.0",
 	"gd": {
-		"android": "2.205",
-		"win": "2.204",
-		"mac": "2.200"
-	},
-	"version": "v1.0.2",
+    "win": "2.204",
+    "android": "2.205",
+    "mac": "2.200"
+  }
+	"version": "1.0.5",
 	"id": "hjfod.gmd-api",
 	"name": "GMD API",
 	"developer": "HJfod",
