@@ -40,3 +40,7 @@
 
 # Ignore build folders
 **/build
+**/build-*
+
+# ILY vscode
+**/.vscode

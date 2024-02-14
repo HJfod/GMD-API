@@ -82,7 +82,7 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
     }
     switch (m_type.value()) {
         case GmdFileType::Gmd: {
-            return file::readString(m_path);
+            return file::readString(m_path).expect("Unable to read {}: {error}", m_path);
         } break;
     
         case GmdFileType::Lvl: {

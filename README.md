@@ -18,8 +18,6 @@ Add `hjfod.gmd-api` into your mod dependencies:
 }
 ```
 
-As long as you have at least [Geode CLI v1.4.0](https://github.com/geode-sdk/cli/releases/latest) and [Geode v1.0.0-beta.3](https://github.com/geode-sdk/geode/releases/latest), the dependency will be automatically installed.
-
 Using the dependency works as such:
 
 ```cpp
@@ -32,4 +30,4 @@ gmd::exportLevelAsGmd(level, "path/to/file.gmd");
 auto level = gmd::importGmdAsLevel("path/to/file.gmd");
 ```
 
-Available on both Windows and Mac.
+The dependency is available on all platforms!
