@@ -40,8 +40,15 @@ namespace gmd {
          */
         Gmd2,
     };
+    enum class GmdListFileType {
+        /**
+         * Gmdl contains the list data as a basic Plist string
+         */
+        Gmdl,
+    };
 
     constexpr auto DEFAULT_GMD_TYPE = GmdFileType::Gmd;
+    constexpr auto DEFAULT_GMD_LIST_TYPE = GmdListFileType::Gmdl;
     constexpr auto GMD2_VERSION = 1;
 
     constexpr const char* gmdTypeToString(GmdFileType type) {
@@ -52,7 +59,6 @@ namespace gmd {
             default:                return nullptr;
         }
     }
-
     constexpr std::optional<GmdFileType> gmdTypeFromString(const char* type) {
         using geode::utils::hash;
         switch (hash(type)) {
@@ -62,6 +68,27 @@ namespace gmd {
             default:           return std::nullopt;
         }
     }
+
+    constexpr const char* gmdListTypeToString(GmdListFileType type) {
+        switch (type) {
+            case GmdListFileType::Gmdl: return "gmdl";
+            default:                    return nullptr;
+        }
+    }
+    constexpr std::optional<GmdListFileType> gmdListTypeFromString(const char* type) {
+        using geode::utils::hash;
+        switch (hash(type)) {
+            case hash("gmdl"): return GmdListFileType::Gmdl;
+            default:           return std::nullopt;
+        }
+    }
+
+    enum class GmdFileKind {
+        None,
+        Level,
+        List,
+    };
+    GMDAPI_DLL GmdFileKind getGmdFileKind(ghc::filesystem::path const& path);
 
     template<class T>
     class IGmdFile {
@@ -176,6 +203,75 @@ namespace gmd {
      * @note The level is **not** added to the local created levels list 
      */
     GMDAPI_DLL geode::Result<GJGameLevel*> importGmdAsLevel(
+        ghc::filesystem::path const& from
+    );
+
+    class GMDAPI_DLL ImportGmdList final {
+    private:
+        class Impl;
+        std::unique_ptr<Impl> m_impl;
+
+        ImportGmdList(ghc::filesystem::path const& path);
+
+    public:
+        static ImportGmdList from(ghc::filesystem::path const& path);
+        ~ImportGmdList();
+
+        ImportGmdList& setType(GmdListFileType type);
+
+        geode::Result<geode::Ref<GJLevelList>> intoList() const;
+    };
+
+    class GMDAPI_DLL ExportGmdList final {
+    private:
+        class Impl;
+        std::unique_ptr<Impl> m_impl;
+
+        ExportGmdList(GJLevelList* list);
+
+    public:
+        static ExportGmdList from(GJLevelList* list);
+        ~ExportGmdList();
+
+        ExportGmdList& setType(GmdListFileType type);
+
+        /**
+         * Export the list into an in-stream byte array
+         * @returns Ok Result with the byte data if succesful, Err otherwise
+         */
+        geode::Result<geode::ByteVector> intoBytes() const;
+        /**
+         * Export the list into a file
+         * @param path The file to export into. Will be created if it doesn't 
+         * exist yet
+         * @returns Ok Result if exporting succeeded, Err otherwise
+         */
+        geode::Result<> intoFile(ghc::filesystem::path const& path) const;
+    };
+
+    /**
+     * Export a list as a GMD file. For more control over the exporting 
+     * options, use the ExportGmdFile class
+     * @param list The list you want to export
+     * @param to The path of the file to export to
+     * @param type The type to export the level as
+     * @returns Ok Result on success, Err on error
+     */
+    GMDAPI_DLL geode::Result<> exportListAsGmd(
+        GJLevelList* list,
+        ghc::filesystem::path const& to,
+        GmdListFileType type = DEFAULT_GMD_LIST_TYPE
+    );
+
+    /**
+     * Import a list from a GMD file. For more control over the importing 
+     * options, use the ImportGmdFile class
+     * @param from The path of the file to import. The path's extension is used 
+     * to infer the type of the file to import - if the extension is unknown, 
+     * DEFAULT_GMD_LIST_TYPE is assumed
+     * @note The list is **not** added to the local created lists list 
+     */
+    GMDAPI_DLL geode::Result<geode::Ref<GJLevelList>> importGmdAsList(
         ghc::filesystem::path const& from
     );
 }

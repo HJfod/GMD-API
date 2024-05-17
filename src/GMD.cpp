@@ -1,8 +1,8 @@
+#include "Shared.hpp"
 #include <GMD.hpp>
 #include <Geode/utils/file.hpp>
 #include <Geode/binding/MusicDownloadManager.hpp>
 #include <Geode/utils/JsonValidation.hpp>
-
 #include <Geode/cocos/support/base64.h>
 
 using namespace geode::prelude;
@@ -22,15 +22,6 @@ static std::string extensionWithoutDot(ghc::filesystem::path const& path) {
     }
     return "";
 }
-
-static std::string removeNullbytesFromString(std::string const& str) {
-    auto ret = str;
-    for (auto& c : ret) {
-        if (!c) c = ' ';
-    }
-    return ret;
-}
-
 static bool verifySongFileName(std::string const& name) {
     // Make sure that the song name is .mp3 and the name is parseable as a number
     if (name.ends_with(".mp3")) {
@@ -185,23 +176,8 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
         return Err(data.error());
     }
 
-    std::string value = removeNullbytesFromString(data.value());
-    // add gjver if it's missing as otherwise DS_Dictionary fails to load the data
-    auto pos = value.substr(0, 100).find("<plist version=\"1.0\">");
-    if (pos != std::string::npos) {
-        value.replace(pos, 21, "<plist version=\"1.0\" gjver=\"2.0\">");
-    }
-    bool isOldFile = false;
-    if (!value.starts_with("<?xml version")) {
-        if (value.substr(0, 100).find("<plist version") == std::string::npos) {
-            isOldFile = true;
-            value = "<?xml version=\"1.0\"?><plist version=\"1.0\" gjver=\"2.0\"><dict><k>root</k>" +
-                value + "</dict></plist>";
-        }
-        else {
-            value = "<?xml version=\"1.0\"?>" + value;
-        }
-    }
+    auto value = *data;
+    auto isOldFile = handlePlistDataForParsing(value);
 
     auto dict = std::make_unique<DS_Dictionary>();
     if (!dict.get()->loadRootSubDictFromString(value)) {
@@ -334,4 +310,13 @@ geode::Result<GJGameLevel*> gmd::importGmdAsLevel(ghc::filesystem::path const& f
     return ImportGmdFile::from(from).inferType().intoLevel();
 }
 
-
+GmdFileKind gmd::getGmdFileKind(ghc::filesystem::path const& path) {
+    auto ext = extensionWithoutDot(path);
+    if (gmdListTypeFromString(ext.c_str())) {
+        return GmdFileKind::List;
+    }
+    if (gmdTypeFromString(ext.c_str())) {
+        return GmdFileKind::Level;
+    }
+    return GmdFileKind::None;
+}
