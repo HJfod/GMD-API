@@ -10,6 +10,7 @@
 	"name": "GMD API",
 	"developer": "HJfod",
 	"description": "API for working with level files (.gmd)",
+	"repository": "https://github.com/HJfod/GMD-API",
 	"api": {
 		"include": [
 			"include/*.hpp"
