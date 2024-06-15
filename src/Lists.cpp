@@ -9,16 +9,16 @@ using namespace geode::prelude;
 using namespace gmd;
 
 struct ImportGmdList::Impl {
-    ghc::filesystem::path path;
+    std::filesystem::path path;
     GmdListFileType type = DEFAULT_GMD_LIST_TYPE;
 
-    Impl(ghc::filesystem::path const& path) : path(path) {}
+    Impl(std::filesystem::path const& path) : path(path) {}
 };
 
-ImportGmdList::ImportGmdList(ghc::filesystem::path const& path)
+ImportGmdList::ImportGmdList(std::filesystem::path const& path)
   : m_impl(std::make_unique<Impl>(path)) {}
 
-ImportGmdList ImportGmdList::from(ghc::filesystem::path const& path) {
+ImportGmdList ImportGmdList::from(std::filesystem::path const& path) {
     return ImportGmdList(path);
 }
 ImportGmdList::~ImportGmdList() {}
@@ -75,15 +75,15 @@ geode::Result<geode::ByteVector> ExportGmdList::intoBytes() const {
     auto data = std::string(dict->saveRootSubDictToString());
     return Ok(ByteVector(data.begin(), data.end()));
 }
-geode::Result<> ExportGmdList::intoFile(ghc::filesystem::path const& path) const {
+geode::Result<> ExportGmdList::intoFile(std::filesystem::path const& path) const {
     GEODE_UNWRAP_INTO(auto data, this->intoBytes());
     GEODE_UNWRAP(file::writeBinary(path, data));
     return Ok();
 }
 
-Result<> gmd::exportListAsGmd(GJLevelList* list, ghc::filesystem::path const& to, GmdListFileType type) {
+Result<> gmd::exportListAsGmd(GJLevelList* list, std::filesystem::path const& to, GmdListFileType type) {
     return ExportGmdList::from(list).setType(type).intoFile(to);
 }
-Result<Ref<GJLevelList>> gmd::importGmdAsList(ghc::filesystem::path const& from) {
+Result<Ref<GJLevelList>> gmd::importGmdAsList(std::filesystem::path const& from) {
     return ImportGmdList::from(from).setType(DEFAULT_GMD_LIST_TYPE).intoList();
 }

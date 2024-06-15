@@ -15,7 +15,7 @@ using namespace gmd;
         return Err(fmt, e.what());\
     }
 
-static std::string extensionWithoutDot(ghc::filesystem::path const& path) {
+static std::string extensionWithoutDot(std::filesystem::path const& path) {
     auto ext = path.extension().string();
     if (ext.size()) {
         return ext.substr(1);
@@ -35,7 +35,7 @@ static bool verifySongFileName(std::string const& name) {
 }
 
 ImportGmdFile::ImportGmdFile(
-    ghc::filesystem::path const& path
+    std::filesystem::path const& path
 ) : m_path(path) {}
 
 bool ImportGmdFile::tryInferType() {
@@ -55,7 +55,7 @@ ImportGmdFile& ImportGmdFile::inferType() {
     return *this;
 }
 
-ImportGmdFile ImportGmdFile::from(ghc::filesystem::path const& path) {
+ImportGmdFile ImportGmdFile::from(std::filesystem::path const& path) {
     return ImportGmdFile(path);
 }
 
@@ -132,7 +132,7 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
                             .expect("Unable to read song file: {error}")
                     );
 
-                    ghc::filesystem::path songTargetPath;
+                    std::filesystem::path songTargetPath;
                     if (root.has("song-is-custom").get<bool>()) {
                         songTargetPath = std::string(MusicDownloadManager::sharedState()->pathForSong(
                             std::stoi(songFile.substr(0, songFile.find_first_of(".")))
@@ -143,12 +143,12 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
 
                     // if we're replacing a file, figure out a different name 
                     // for the old one
-                    ghc::filesystem::path oldSongPath = songTargetPath;
-                    while (ghc::filesystem::exists(oldSongPath)) {
+                    std::filesystem::path oldSongPath = songTargetPath;
+                    while (std::filesystem::exists(oldSongPath)) {
                         oldSongPath.replace_filename(oldSongPath.stem().string() + "_.mp3");
                     }
-                    if (ghc::filesystem::exists(oldSongPath)) {
-                        ghc::filesystem::rename(songTargetPath, oldSongPath);
+                    if (std::filesystem::exists(oldSongPath)) {
+                        std::filesystem::rename(songTargetPath, oldSongPath);
                     }
                     (void)file::writeBinary(songTargetPath, songData);
                 }
@@ -275,7 +275,7 @@ geode::Result<ByteVector> ExportGmdFile::intoBytes() const {
 
             auto json = matjson::Value(matjson::Object());
             if (m_includeSong) {
-                auto path = ghc::filesystem::path(std::string(m_level->getAudioFileName()));
+                auto path = std::filesystem::path(std::string(m_level->getAudioFileName()));
                 json["song-file"] = path.filename().string();
                 json["song-is-custom"] = m_level->m_songID;
                 GEODE_UNWRAP(zip.addFrom(path));
@@ -292,7 +292,7 @@ geode::Result<ByteVector> ExportGmdFile::intoBytes() const {
     }
 }
 
-geode::Result<> ExportGmdFile::intoFile(ghc::filesystem::path const& path) const {
+geode::Result<> ExportGmdFile::intoFile(std::filesystem::path const& path) const {
     GEODE_UNWRAP_INTO(auto data, this->intoBytes());
     GEODE_UNWRAP(file::writeBinary(path, data));
     return Ok();
@@ -300,17 +300,17 @@ geode::Result<> ExportGmdFile::intoFile(ghc::filesystem::path const& path) const
 
 geode::Result<> gmd::exportLevelAsGmd(
     GJGameLevel* level,
-    ghc::filesystem::path const& to,
+    std::filesystem::path const& to,
     GmdFileType type
 ) {
     return ExportGmdFile::from(level).setType(type).intoFile(to);
 }
 
-geode::Result<GJGameLevel*> gmd::importGmdAsLevel(ghc::filesystem::path const& from) {
+geode::Result<GJGameLevel*> gmd::importGmdAsLevel(std::filesystem::path const& from) {
     return ImportGmdFile::from(from).inferType().intoLevel();
 }
 
-GmdFileKind gmd::getGmdFileKind(ghc::filesystem::path const& path) {
+GmdFileKind gmd::getGmdFileKind(std::filesystem::path const& path) {
     auto ext = extensionWithoutDot(path);
     if (gmdListTypeFromString(ext.c_str())) {
         return GmdFileKind::List;

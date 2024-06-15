@@ -88,7 +88,7 @@ namespace gmd {
         Level,
         List,
     };
-    GMDAPI_DLL GmdFileKind getGmdFileKind(ghc::filesystem::path const& path);
+    GMDAPI_DLL GmdFileKind getGmdFileKind(std::filesystem::path const& path);
 
     template<class T>
     class IGmdFile {
@@ -107,10 +107,10 @@ namespace gmd {
      */
     class GMDAPI_DLL ImportGmdFile : public IGmdFile<ImportGmdFile> {
     protected:
-        ghc::filesystem::path m_path;
+        std::filesystem::path m_path;
         bool m_importSong = false;
 
-        ImportGmdFile(ghc::filesystem::path const& path);
+        ImportGmdFile(std::filesystem::path const& path);
 
         geode::Result<std::string> getLevelData() const;
 
@@ -119,7 +119,7 @@ namespace gmd {
          * Create an ImportGmdFile instance from a file
          * @param path The file to import
          */
-        static ImportGmdFile from(ghc::filesystem::path const& path);
+        static ImportGmdFile from(std::filesystem::path const& path);
         /**
          * Try to infer the file type from the file's path
          * @returns True if the type was inferred, false if not
@@ -177,7 +177,7 @@ namespace gmd {
          * exist yet
          * @returns Ok Result if exporting succeeded, Err otherwise
          */
-        geode::Result<> intoFile(ghc::filesystem::path const& path) const;
+        geode::Result<> intoFile(std::filesystem::path const& path) const;
     };
 
     /**
@@ -190,7 +190,7 @@ namespace gmd {
      */
     GMDAPI_DLL geode::Result<> exportLevelAsGmd(
         GJGameLevel* level,
-        ghc::filesystem::path const& to,
+        std::filesystem::path const& to,
         GmdFileType type = DEFAULT_GMD_TYPE
     );
 
@@ -203,7 +203,7 @@ namespace gmd {
      * @note The level is **not** added to the local created levels list 
      */
     GMDAPI_DLL geode::Result<GJGameLevel*> importGmdAsLevel(
-        ghc::filesystem::path const& from
+        std::filesystem::path const& from
     );
 
     class GMDAPI_DLL ImportGmdList final {
@@ -211,10 +211,10 @@ namespace gmd {
         class Impl;
         std::unique_ptr<Impl> m_impl;
 
-        ImportGmdList(ghc::filesystem::path const& path);
+        ImportGmdList(std::filesystem::path const& path);
 
     public:
-        static ImportGmdList from(ghc::filesystem::path const& path);
+        static ImportGmdList from(std::filesystem::path const& path);
         ~ImportGmdList();
 
         ImportGmdList& setType(GmdListFileType type);
@@ -246,7 +246,7 @@ namespace gmd {
          * exist yet
          * @returns Ok Result if exporting succeeded, Err otherwise
          */
-        geode::Result<> intoFile(ghc::filesystem::path const& path) const;
+        geode::Result<> intoFile(std::filesystem::path const& path) const;
     };
 
     /**
@@ -259,7 +259,7 @@ namespace gmd {
      */
     GMDAPI_DLL geode::Result<> exportListAsGmd(
         GJLevelList* list,
-        ghc::filesystem::path const& to,
+        std::filesystem::path const& to,
         GmdListFileType type = DEFAULT_GMD_LIST_TYPE
     );
 
@@ -272,6 +272,6 @@ namespace gmd {
      * @note The list is **not** added to the local created lists list 
      */
     GMDAPI_DLL geode::Result<geode::Ref<GJLevelList>> importGmdAsList(
-        ghc::filesystem::path const& from
+        std::filesystem::path const& from
     );
 }
