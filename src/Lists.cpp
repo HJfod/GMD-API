@@ -43,7 +43,7 @@ Result<Ref<GJLevelList>> ImportGmdList::intoList() const {
     auto list = GJLevelList::create();
     list->dataLoaded(dict.get());
 
-    list->m_listType = 2;
+    list->m_listType = GJLevelType::Editor;
     list->m_isEditable = true;
 
     return Ok(list);
