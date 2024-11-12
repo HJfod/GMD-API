@@ -1,3 +1,4 @@
+#include "Geode/binding/GJLevelList.hpp"
 #include "Shared.hpp"
 #include <GMD.hpp>
 #include <Geode/utils/file.hpp>
@@ -28,9 +29,9 @@ ImportGmdList& ImportGmdList::setType(GmdListFileType type) {
     return *this;
 }
 
-Result<Ref<GJLevelList>> ImportGmdList::intoList() const {
+Result<Ref<GJLevelList>> ImportGmdList::intoList() {
     GEODE_UNWRAP_INTO(auto data, file::readString(m_impl->path)
-        .expect("Unable to read {}: {error}", m_impl->path)
+        .mapErr([this](std::string err) { return fmt::format("Unable to read {}: {}", m_impl->path, err); })
     );
     handlePlistDataForParsing(data);
 
