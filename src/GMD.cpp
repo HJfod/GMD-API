@@ -7,13 +7,8 @@
 
 using namespace geode::prelude;
 using namespace gmd;
-
-#define TRY_UNWRAP_INTO(into, fmt, ...) \
-    try {\
-        into = (__VA_ARGS__);\
-    } catch(std::exception& e) {\
-        return Err(fmt, e.what());\
-    }
+#define TRY_UNWRAP_INTO(into, _fmt, ...) \
+        into = (__VA_ARGS__).mapErr([](std::string err) { return fmt::format(_fmt, err); }).unwrap();
 
 static std::string extensionWithoutDot(std::filesystem::path const& path) {
     auto ext = path.extension().string();
@@ -73,7 +68,7 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
     }
     switch (m_type.value()) {
         case GmdFileType::Gmd: {
-            return file::readString(m_path).expect("Unable to read {}: {error}", m_path);
+            return file::readString(m_path).mapErr([this](std::string err) { return fmt::format("Unable to read {}: {}", m_path, err); });
         } break;
     
         case GmdFileType::Lvl: {
@@ -99,13 +94,13 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
             try {
                 GEODE_UNWRAP_INTO(
                     auto unzip, file::Unzip::create(m_path)
-                        .expect("Unable to read file: {error}")
+                        .mapErr([](std::string err) { return fmt::format("Unable to read file: {}", err); })
                 );
 
                 // read metadata
                 GEODE_UNWRAP_INTO(
                     auto jsonData, unzip.extract("level.meta")
-                        .expect("Unable to read metadata: {error}")
+                        .mapErr([](std::string err) { return fmt::format("Unable to read metadata: {}", err); })
                 );
 
                 matjson::Value json;
@@ -114,8 +109,7 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
                     matjson::parse(std::string(jsonData.begin(), jsonData.end()))
                 );
 
-                JsonChecker checker(json);
-                auto root = checker.root("[level.meta]").obj();
+                JsonExpectedValue root(json, "[level.meta]");
                 
                 // unzip song
                 std::string songFile;
@@ -129,7 +123,7 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
 
                     GEODE_UNWRAP_INTO(
                         auto songData, unzip.extract(songFile)
-                            .expect("Unable to read song file: {error}")
+                            .mapErr([](std::string err) { return fmt::format("Unable to read song file: {}", err); })
                     );
 
                     std::filesystem::path songTargetPath;
@@ -155,7 +149,7 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
 
                 GEODE_UNWRAP_INTO(
                     auto levelData, unzip.extract("level.data")
-                        .expect("Unable to read level data: {error}")
+                        .mapErr([](std::string err) { return fmt::format("Unable to read level data: {}", err); })
                 );
 
                 return Ok(std::string(levelData.begin(), levelData.end()));
@@ -172,11 +166,8 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
 
 geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
     auto data = getLevelData();
-    if (!data) {
-        return Err(data.error());
-    }
 
-    auto value = *data;
+    auto value = data.mapErr([](std::string err) { return err; }).unwrap();
     auto isOldFile = handlePlistDataForParsing(value);
 
     auto dict = std::make_unique<DS_Dictionary>();
@@ -273,7 +264,7 @@ geode::Result<ByteVector> ExportGmdFile::intoBytes() const {
             GEODE_UNWRAP_INTO(auto data, this->getLevelData());
             GEODE_UNWRAP_INTO(auto zip, file::Zip::create());
 
-            auto json = matjson::Value(matjson::Object());
+            auto json = matjson::Value();
             if (m_includeSong) {
                 auto path = std::filesystem::path(std::string(m_level->getAudioFileName()));
                 json["song-file"] = path.filename().string();

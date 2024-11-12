@@ -1,8 +1,9 @@
 #pragma once
 
 #include <optional>
-#include <Geode/utils/Result.hpp>
+#include <Geode/Result.hpp>
 #include <Geode/utils/general.hpp>
+#include <Geode/utils/cocos.hpp>
 #include <Geode/binding/GJGameLevel.hpp>
 
 #ifdef GEODE_IS_WINDOWS
@@ -219,7 +220,7 @@ namespace gmd {
 
         ImportGmdList& setType(GmdListFileType type);
 
-        geode::Result<geode::Ref<GJLevelList>> intoList() const;
+        geode::Result<geode::Ref<GJLevelList>> intoList();
     };
 
     class GMDAPI_DLL ExportGmdList final {
