@@ -218,7 +218,7 @@ geode::Result<std::string> ExportGmdFile::getLevelData() const {
     m_level->encodeWithCoder(dict);
     auto data = dict->saveRootSubDictToString();
     delete dict;
-    return Ok(data);
+    return Ok(std::string(data));
 }
 
 ExportGmdFile& ExportGmdFile::setIncludeSong(bool song) {
