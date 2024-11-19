@@ -11,8 +11,7 @@ Add `hjfod.gmd-api` into your mod dependencies:
     "dependencies": [
         {
             "id": "hjfod.gmd-api",
-            "version": ">=v1.0.1",
-            "required": true
+            "version": "1.4.1"
         }
     ]
 }
