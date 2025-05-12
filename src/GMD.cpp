@@ -198,6 +198,11 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
     }
 #endif
 
+    // this is required for supporting pre-1.9 gmds
+    if(!level->m_levelString.size()) {
+        level->m_levelString = dict.get()->getStringForKey("k4");
+    }
+
     return Ok(level);
 }
 
