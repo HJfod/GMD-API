@@ -178,6 +178,11 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
 
     level->m_isEditable = true;
     level->m_levelType = GJLevelType::Editor;
+    level->m_stars = 0;
+    level->m_demon = 0;
+    level->m_dailyID = 0;
+    level->m_gauntletLevel = false;
+    level->m_gauntletLevel2 = false;
 
 #ifdef GEODE_IS_WINDOWS
     // old gdshare double base64 encoded the description,
