@@ -7,8 +7,6 @@
 
 using namespace geode::prelude;
 using namespace gmd;
-#define TRY_UNWRAP_INTO(into, _fmt, ...) \
-        into = (__VA_ARGS__).mapErr([](std::string err) { return fmt::format(_fmt, err); }).unwrap();
 
 static std::string extensionWithoutDot(std::filesystem::path const& path) {
     auto ext = path.extension().string();
@@ -103,10 +101,9 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
                         .mapErr([](std::string err) { return fmt::format("Unable to read metadata: {}", err); })
                 );
 
-                matjson::Value json;
-                TRY_UNWRAP_INTO(
-                    json, "Unable to parse metadata: {}",
-                    matjson::parse(std::string(jsonData.begin(), jsonData.end()))
+                GEODE_UNWRAP_INTO(
+                    auto json, matjson::parse(std::string(jsonData.begin(), jsonData.end()))
+                        .mapErr([](std::string err) { return fmt::format("Unable to parse metadata: {}", err); })
                 );
 
                 JsonExpectedValue root(json, "[level.meta]");
@@ -165,9 +162,8 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
 }
 
 geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
-    auto data = getLevelData();
+    GEODE_UNWRAP_INTO(auto value, getLevelData());
 
-    auto value = data.mapErr([](std::string err) { return err; }).unwrap();
     auto isOldFile = handlePlistDataForParsing(value);
 
     auto dict = std::make_unique<DS_Dictionary>();
