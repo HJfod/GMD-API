@@ -136,6 +136,7 @@ geode::Result<std::string> ImportGmdFile::getLevelData() const {
                     // for the old one
                     std::filesystem::path oldSongPath = songTargetPath;
                     while (std::filesystem::exists(oldSongPath)) {
+                        // @geode-ignore(unknown-resource)
                         oldSongPath.replace_filename(oldSongPath.stem().string() + "_.mp3");
                     }
                     if (std::filesystem::exists(oldSongPath)) {
@@ -210,10 +211,9 @@ geode::Result<std::string> ExportGmdFile::getLevelData() const {
     if (!m_level) {
         return Err("No level set");
     }
-    auto dict = new DS_Dictionary();
-    m_level->encodeWithCoder(dict);
+    auto dict = std::make_unique<DS_Dictionary>();
+    m_level->encodeWithCoder(dict.get());
     auto data = dict->saveRootSubDictToString();
-    delete dict;
     return Ok(std::string(data));
 }
 
