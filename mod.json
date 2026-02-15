@@ -1,12 +1,12 @@
 {
-	"geode": "4.7.0",
+	"geode": "5.0.0-beta.1",
 	"gd": {
-		"win": "2.2074",
-		"android": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
 	},
-	"version": "1.4.4",
+	"version": "1.5.0",
 	"id": "hjfod.gmd-api",
 	"name": "GMD API",
 	"developer": "HJfod",
@@ -19,5 +19,5 @@
 			"include/*.hpp"
 		]
 	},
-	"tags": ["utility", "developer"]
+	"tags": ["utility", "developer", "api"]
 }
