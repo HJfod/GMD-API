@@ -8,12 +8,9 @@ Add `hjfod.gmd-api` into your mod dependencies:
 
 ```json
 {
-    "dependencies": [
-        {
-            "id": "hjfod.gmd-api",
-            "version": "1.4.1"
-        }
-    ]
+    "dependencies": {
+        "hjfod.gmd-api": "1.5.0"
+    }
 }
 ```
 
