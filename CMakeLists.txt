@@ -13,7 +13,6 @@ project(GMD_API VERSION 1.0.0)
 
 file(GLOB SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
-# Set up the mod binary
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
