@@ -7,3 +7,5 @@ An API for working with level files.
 If you want the actual GDShare mod (which adds buttons to export and import levels), get it here:
 
 <mod:hjfod.gdshare>
+
+Thank you to **Hiimjasmine00** and **Cvolton** for helping!
