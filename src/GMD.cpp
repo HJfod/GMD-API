@@ -1,6 +1,7 @@
 #include "Shared.hpp"
 #include <GMD.hpp>
 #include <Geode/utils/file.hpp>
+#include <Geode/utils/base64.hpp>
 #include <Geode/binding/MusicDownloadManager.hpp>
 #include <Geode/utils/JsonValidation.hpp>
 #include <Geode/cocos/support/base64.h>
@@ -184,24 +185,13 @@ geode::Result<GJGameLevel*> ImportGmdFile::intoLevel() const {
     level->m_gauntletLevel = false;
     level->m_gauntletLevel2 = false;
 
-#ifdef GEODE_IS_WINDOWS
     // old gdshare double base64 encoded the description,
     // so we decode it again
     if (isOldFile && level->m_levelDesc.size()) {
-        unsigned char* out = nullptr;
-        // we really should add some base64 utils, this is nasty
-        auto size = cocos2d::base64Decode(
-            reinterpret_cast<unsigned char*>(const_cast<char*>(level->m_levelDesc.c_str())),
-            level->m_levelDesc.size(),
-            &out
-        );
-        if (out) {
-            auto newDesc = std::string(reinterpret_cast<char*>(out), size);
-            free(out);
-            level->m_levelDesc = newDesc;
+        if(auto res = base64::decodeString(level->m_levelDesc)) {
+            level->m_levelDesc = res.unwrap();
         }
     }
-#endif
 
     // this is required for supporting pre-1.9 gmds
     if(!level->m_levelString.size()) {
